@@ -10,10 +10,16 @@ resources:
 
 variables:
   tag: '$(Build.BuildId)'
+  projectName: demo
+  appName: push
+  localSettingsName: sample-local-settings  #Name of the Azure Key Vault key
+  localSettingsFile: local_settings.json    #Filename when downloaded and mounted
+  repository: '$(projectName)/$(appName)/$(Build.SourceBranchName)'
+  artifactName: yaml-k8s
 
 stages:
 - stage: Build
-  displayName: Build image
+  displayName: Build image and push to registry
   jobs:
   - job: Build
     displayName: Build
@@ -25,9 +31,9 @@ stages:
       inputs:
         command: buildAndPush
         containerRegistry: registryrjrdev
+        repository: '$(repository)'
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: |
           $(tag)
           latest
         addPipelineData: false
-    
